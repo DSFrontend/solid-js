@@ -1,0 +1,11 @@
+@font-face {
+  font-family: 'Nothing';
+  src: local('Nothing'), url('/nothing-font-5x7.ttf'), format('ttf');
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: 'Nothing', sans-serif;
+}
