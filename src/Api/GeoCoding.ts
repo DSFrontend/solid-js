@@ -23,5 +23,5 @@ export async function getCitiesInfo({ name, count = 5, format = 'json', language
   const urlParams = new URLSearchParams({ name, count: count?.toString(), format, language, })
   const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?${urlParams.toString()}`)
 
-  return response.json() as Promise<Output>
+  return response.json().then(data => data.results ?? []) as Promise<CityInfo[]>
 }

@@ -1,15 +1,15 @@
-import { FC } from 'react';
+import { Component } from 'solid-js';
 import type { CurrentWeatherResponse } from '../Api';
 import { WeatherMap } from '../constants';
 
-export const CurrentWeather: FC<{ weather: CurrentWeatherResponse }> = ({
-  weather,
-}) => {
+export const CurrentWeather: Component<{ weather: CurrentWeatherResponse }> = (
+  props
+) => {
   console.log('CurrentWeather');
   return (
     <div>
-      <h1>{WeatherMap[weather.weathercode]}</h1>
-      <h2>{weather.temperature}*C</h2>
+      <h1>{WeatherMap[props.weather.weathercode]}</h1>
+      <h2>{props.weather.temperature}*C</h2>
     </div>
   );
 };

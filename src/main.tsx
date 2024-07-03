@@ -1,7 +1,8 @@
-import { createRoot } from 'react-dom/client';
+import { render } from 'solid-js/web';
 import '@picocss/pico';
+import 'solid-devtools';
 
 import './index.css';
 import { App } from './App.tsx';
 
-createRoot(document.getElementById('root')!).render(<App />);
+render(App, document.getElementById('root')!);

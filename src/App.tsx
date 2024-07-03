@@ -1,44 +1,48 @@
-import { useEffect, useState } from 'react';
 import { CurrentWeather } from './Components/CurrentWeather';
-import { CityInfo, WeatherResponse, getWeather } from './Api';
-import { LocationSearch } from './Components/LocationSearch';
+import { CityInfo, getWeather } from './Api';
 import { DailyWeather } from './Components/DailyWeather';
+import { For, Show, createResource, createSignal } from 'solid-js';
+import { LocationSearch } from './Components/LocationSearch';
 
 export function App() {
-  const [city, setCity] = useState<CityInfo | null>(null);
-  const [data, setData] = useState<WeatherResponse | null>(null);
+  const [city, setCity] = createSignal<CityInfo | null>(null);
 
-  useEffect(() => {
-    console.log('App: effect');
-    if (!city) return;
-
-    getWeather(city.latitude, city.longitude).then(setData);
-  }, [city]);
+  const [data] = createResource(city, (city) =>
+    getWeather(city.latitude, city.longitude)
+  );
 
   console.log('App');
+
+  const fullCityName = () =>
+    `${city()?.name}, ${city()?.country}, ${city()?.admin1}`;
 
   return (
     <>
       <LocationSearch onCitySelected={setCity} />
-      <h1>
-        {city?.name}, {city?.country}, {city?.admin1}
-      </h1>
-      {data?.current_weather && (
-        <CurrentWeather weather={data.current_weather} />
-      )}
-      {data?.daily &&
-        data.daily.time.map((_, i) => {
-          return (
-            <DailyWeather
-              date={data.daily?.time[i] ?? ''}
-              weather_code={data.daily?.weather_code?.[i] ?? 0}
-              temperature={[
-                data.daily?.apparent_temperature_min?.[i] ?? 0,
-                data.daily?.apparent_temperature_max?.[i] ?? 0,
-              ]}
-            />
-          );
-        })}
+      <Show when={city()}>
+        <h1>{fullCityName()}</h1>
+      </Show>
+      <Show when={data()?.current_weather}>
+        {(weather) => <CurrentWeather weather={weather()} />}
+      </Show>
+      <Show when={data()?.daily}>
+        {(daily) => (
+          <For each={daily().time}>
+            {(_, i) => {
+              return (
+                <DailyWeather
+                  date={daily().time[i()] ?? ''}
+                  weather_code={daily().weather_code?.[i()] ?? 0}
+                  temperature={[
+                    daily().apparent_temperature_min?.[i()] ?? 0,
+                    daily().apparent_temperature_max?.[i()] ?? 0,
+                  ]}
+                />
+              );
+            }}
+          </For>
+        )}
+      </Show>
     </>
   );
 }

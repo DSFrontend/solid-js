@@ -1,6 +1,6 @@
-import { FC } from 'react';
 import { WeatherMap } from '../constants';
 import { T } from './T';
+import { Component, splitProps } from 'solid-js';
 
 type DailyWeatherProps = {
   date: string;
@@ -10,24 +10,23 @@ type DailyWeatherProps = {
 
 const dateFormatter = new Intl.DateTimeFormat('en', { dateStyle: 'medium' });
 
-export const DailyWeather: FC<DailyWeatherProps> = ({
-  date,
-  temperature,
-  weather_code,
-}) => {
-  console.log('DailyWeather', date);
+export const DailyWeather: Component<DailyWeatherProps> = (props) => {
+  const [local, other] = splitProps(props, ['temperature']);
+
+  console.log('DailyWeather', other.date);
   return (
     <article>
       <header>
         <h2>
-          {dateFormatter.format(new Date(date))}, {WeatherMap[weather_code]}
+          {dateFormatter.format(new Date(other.date))},{' '}
+          {WeatherMap[other.weather_code]}
         </h2>
       </header>
       <h3>
-        Min: <T>{temperature[0]}</T>
+        Min: <T>{local.temperature[0]}</T>
       </h3>
       <h3>
-        Max: <T>{temperature[1]}</T>
+        Max: <T>{local.temperature[1]}</T>
       </h3>
     </article>
   );
