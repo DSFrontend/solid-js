@@ -9,3 +9,11 @@ h3,
 h4 {
   font-family: 'Nothing', sans-serif;
 }
+
+.standard {
+  background-color: green;
+}
+
+.error {
+  background-color: hotpink;
+}

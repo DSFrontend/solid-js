@@ -52,7 +52,13 @@ export const LocationSearch: Component<LocationSearchProps> = (props) => {
           value={city()}
           onchange={handleChange}
         />
-        <button aria-busy={cities.loading}>Search</button>
+        <button
+          class="standard"
+          classList={{ error: cities.error != null }}
+          aria-busy={cities.loading}
+        >
+          Search
+        </button>
       </fieldset>
       <small>{cities.error?.message}</small>
       <datalist id="cities">
