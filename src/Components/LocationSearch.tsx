@@ -2,6 +2,7 @@ import {
   Component,
   For,
   JSX,
+  Show,
   createEffect,
   createResource,
   createSignal,
@@ -14,9 +15,15 @@ type LocationSearchProps = {
 
 export const LocationSearch: Component<LocationSearchProps> = (props) => {
   const [city, setCity] = createSignal('');
-  const [cities] = createResource(city, (name) => getCitiesInfo({ name }), {
-    initialValue: [],
-  });
+  const [cities, api] = createResource(
+    city,
+    (name) => getCitiesInfo({ name }),
+    {
+      initialValue: [],
+    }
+  );
+
+  // api.mutate() // useOptimistic
 
   const handleChange: JSX.CustomEventHandlersLowerCase<HTMLInputElement>['onchange'] =
     (e) => {
@@ -32,22 +39,32 @@ export const LocationSearch: Component<LocationSearchProps> = (props) => {
 
   console.log('LocationSearch');
 
+  createEffect(() => {
+    console.log(cities.loading, cities.state, cities.error);
+  });
+
   return (
     <label>
-      <input
-        type="search"
-        list="cities"
-        value={city()}
-        onchange={handleChange}
-      />
+      <fieldset aria-invalid={cities.state === 'errored'} role="search">
+        <input
+          aria-invalid={cities.state === 'errored'}
+          list="cities"
+          value={city()}
+          onchange={handleChange}
+        />
+        <button aria-busy={cities.loading}>Search</button>
+      </fieldset>
+      <small>{cities.error?.message}</small>
       <datalist id="cities">
-        <For each={cities()}>
-          {({ name, country, admin1 }) => {
-            return (
-              <option label={`${name}, ${country}, ${admin1}`} value={name} />
-            );
-          }}
-        </For>
+        <Show when={cities.state === 'ready'}>
+          <For each={cities()}>
+            {({ name, country, admin1 }) => {
+              return (
+                <option label={`${name}, ${country}, ${admin1}`} value={name} />
+              );
+            }}
+          </For>
+        </Show>
       </datalist>
     </label>
   );
